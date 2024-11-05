@@ -105,8 +105,5 @@ def eliminar_usuario(request, usuario_id):
     usuario.delete()
     return redirect('administrador_dashboard')
 
-def logout(request):
-    return redirect(request, 'logout.html')
-
 def perfil(request):
     return redirect(request, 'perfil.html')
