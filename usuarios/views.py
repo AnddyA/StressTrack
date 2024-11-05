@@ -5,6 +5,9 @@ from .models import Usuario
 from django.contrib.auth.hashers import check_password
 from django.contrib import messages
 from django.contrib.auth import login, authenticate
+from django.contrib.auth import get_user_model, logout
+from django.contrib.auth import update_session_auth_hash
+
 
 def registro_usuario(request):
     if request.method == 'POST':
@@ -105,5 +108,52 @@ def eliminar_usuario(request, usuario_id):
     usuario.delete()
     return redirect('administrador_dashboard')
 
+
 def perfil(request):
-    return redirect(request, 'perfil.html')
+    usuario = request.user  # Obtiene el usuario actual
+
+    if request.method == 'POST':
+        # Si el usuario desea actualizar su perfil
+        nombre = request.POST.get('nombre')
+        correo = request.POST.get('correo')
+        contrasena = request.POST.get('contrasena')
+        
+        # Actualiza los datos del usuario
+        if nombre:
+            usuario.username = nombre
+        if correo:
+            usuario.email = correo
+        if contrasena:
+            usuario.set_password(contrasena)
+        usuario.save()
+
+        messages.success(request, 'Perfil actualizado correctamente')
+        return redirect('usuario:perfil')
+
+    return render(request, 'perfil.html', {'usuario': usuario})
+
+def editar_perfil(request):
+    """Permite al usuario actualizar su nombre, correo y contraseña"""
+    usuario = request.user
+
+    if request.method == 'POST':
+        nombre = request.POST.get('nombre')
+        correo = request.POST.get('correo')
+        contrasena = request.POST.get('contrasena')
+
+        # Actualiza los campos según los datos recibidos
+        if nombre:
+            usuario.username = nombre
+        if correo:
+            usuario.email = correo
+        if contrasena:
+            usuario.set_password(contrasena)
+            # Actualiza la sesión para que el usuario no tenga que volver a iniciar sesión
+            update_session_auth_hash(request, usuario)
+
+        usuario.save()
+        messages.success(request, 'Perfil actualizado correctamente')
+        return redirect('usuarios:perfil_usuario')  # Redirige a la página de perfil
+
+    # Si no es POST, renderiza la página de edición de perfil
+    return render(request, 'usuarios/editar_perfil.html', {'usuario': usuario})

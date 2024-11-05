@@ -21,7 +21,7 @@ from usuarios import views
 urlpatterns = [
     path('', views.login_usuario, name='login'),
     path('register/', views.registro_usuario, name='register'),
-    path('usuarios/', include('usuarios.urls')),
+    path('usuario/', include('usuarios.urls')),
     path('administrador/', views.administrador_dashboard, name='administrador_dashboard'),
     path('docente/', views.docente_dashboard, name='docente_dashboard'),
     path('estudiante/', views.estudiante_dashboard, name='estudiante_dashboard'),
