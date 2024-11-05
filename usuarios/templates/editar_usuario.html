@@ -1,0 +1,5 @@
+<form method="post" action="{% url 'editar_usuario' usuario.id %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Guardar Cambios</button>
+</form>

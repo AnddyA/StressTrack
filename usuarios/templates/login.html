@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link rel="stylesheet" href="../static/styles.css">
+
+    <title>Sign in to StressTrack</title>
+</head>
+<body>
+    <header>
+        <img src="../static/img/IconStressWhite.png" id="logo">
+    </header>
+
+    <main id="container">
+        <h1 id="title">
+            Sign in to StressTrack
+        </h1>
+
+        <form action="{% url 'login' %}" method="post">
+            {% csrf_token %}
+            <div class="input-field">
+                <label for="user">Dirección de Email</label>
+                <input type="email" name="email" id="email" class="form-control" required>
+            </div>
+        
+            <div class="input-field">
+                <label for="password">Contraseña</label>
+                <input type="password" name="password" id="password" class="form-control" required>
+            </div>
+        
+            <button type="submit" id="submit_button">Iniciar Sesion</button>
+        
+            <div id="login_callout">
+                <p>Nuevo en StressTrack? <a href="{% url 'register' %}">Crear una cuenta</a>.</p>
+            </div>
+        </form>
+        
+
+    </main>
+
+</body>
+</html>

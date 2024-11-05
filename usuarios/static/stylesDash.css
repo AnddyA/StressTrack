@@ -1,0 +1,165 @@
+/* Variables de color */
+:root {
+    --color-neutral-10: #0d1117;
+    --color-neutral-20: #161b22;
+    --color-neutral-30: #21262d;
+    --color-neutral-40: #30363d;
+    --color-neutral-50: #8b949e;
+    --color-neutral-60: #c9d1d9;
+    --color-neutral-70: #ffffff;
+}
+
+/* Estilos generales */
+body {
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    background-color: var(--color-neutral-20);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Para asegurar que el footer esté al final */
+}
+
+header h1 {
+    margin: 0;
+    padding: 20px;
+    font-size: 24px;
+    color: var(--color-neutral-60);
+}
+
+footer {
+    text-align: center;
+    padding: 10px;
+    background-color: var(--color-neutral-10);
+    color: var(--color-neutral-50);
+    margin-top: auto; /* Para que el footer esté al final */
+}
+
+/* Estilos para la barra lateral */
+.sidenav {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 250px;
+    height: 100%;
+    background-color: var(--color-neutral-30);
+    padding-top: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.sidenav-header {
+    text-align: center;
+    padding-bottom: 20px;
+}
+
+.logo {
+    max-width: 40%;
+    height: auto;
+}
+
+/* Resto de los estilos de la barra lateral y contenido principal */
+.sidenav h2 {
+    color: var(--color-neutral-60);
+    font-weight: 600;
+    font-size: 20px;
+}
+
+.sidenav-collapse {
+    flex-grow: 1; /* Permite que esta sección ocupe el espacio restante */
+}
+
+.sidenav-collapse p{
+    color: #4CAF50;
+}
+
+.nav-item {
+    list-style: none;
+    margin: 0;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    color: var(--color-neutral-60);
+    text-decoration: none;
+    font-size: 16px;
+    transition: background 0.3s;
+}
+
+.nav-link i {
+    margin-right: 10px;
+    font-size: 20px;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    background-color: var(--color-neutral-30);
+    color: #4CAF50;
+}
+
+
+/* Contenido principal */
+.main-content {
+    margin-left: 260px;
+    padding: 20px;
+    flex-grow: 1; /* Para que el contenido ocupe el espacio restante */
+}
+
+.main-content h2{
+    color: #ffffff;
+}
+
+.content-section {
+    margin-top: 20px;
+}
+
+/* Estilos de la tabla */
+.user-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: var(--color-neutral-70);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.user-table thead {
+    background-color: #4CAF50;
+    color: var(--color-neutral-70);
+}
+
+.user-table th,
+.user-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid var(--color-neutral-50);
+}
+
+.user-table tbody tr:hover {
+    background-color: var(--color-neutral-50);
+}
+
+.action-btn {
+    padding: 5px 10px;
+    border-radius: 5px;
+    text-decoration: none;
+    color: var(--color-neutral-70);
+}
+
+.action-btn.edit {
+    background-color: #4CAF50;
+}
+
+.action-btn.delete {
+    background-color: #a81a00;
+}
+
+/* Footer */
+footer {
+    margin-top: 20px;
+    font-size: 14px;
+    color: var(--color-neutral-50);
+}
