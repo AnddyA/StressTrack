@@ -24,10 +24,11 @@ def registro_usuario(request):
         form = RegistroForm()
         print("todo mal")
     return render(request, 'register.html', {'form': form})
-
+'''
 def login_usuario(request):
     if request.method == 'POST':
         form = UsuarioForm(data=request.POST)
+        print(request.POST['email'])
         if form.is_valid():
             email = form.cleaned_data.get('email')
             password = form.cleaned_data.get('password')
@@ -40,37 +41,37 @@ def login_usuario(request):
                     return redirect('docente_dashboard')
                 elif user.is_estudiante():
                     return redirect('estudiante_dashboard')
+        else:
+            print(form.errors)
     else:
         form = UsuarioForm()
     return render(request, 'login.html', {'form': form})
-
 '''
+
 def login_usuario(request):
     if request.method == 'POST':
-        print("no")
         email = request.POST.get('email')
         password = request.POST.get('password')
         try:
             user = Usuario.objects.get(email=email)
-            if check_password(password, user.password): # Verifica la contraseña
-                if user.id_rol == 1:
-                    print("ingreso de admin")
+            
+            if password == user.password: # Verifica la contraseña
+
+                if user.id_rol.nombre_rol == 'Administrador':
                     return redirect('administrador_dashboard')
-                elif user.id_rol == 2:
-                    print("ingreso de docente")
+                elif user.id_rol.nombre_rol == 'Docente':
                     return redirect('docente_dashboard')
-                elif user.id_rol == 3:
-                    print("ingreso de estud")
+                elif user.id_rol.nombre_rol == 'Estudiante':
                     return redirect('estudiante_dashboard')
             else:
                 return render(request, 'login.html', {'error': 'Credenciales inválidas'})
-                print("nosirven")
+
         except Usuario.DoesNotExist:
             return render(request, 'login.html', {'error': 'Credenciales inválidas'})
-            print("noexiste")
+
     return render(request, 'login.html')
-    print("noentro")
-'''
+
+
 def administrador_dashboard(request):
     usuarios = Usuario.objects.all()
     return render(request, 'administrador_dashboard.html', {'usuarios':usuarios})
@@ -120,7 +121,7 @@ def perfil(request):
         
         # Actualiza los datos del usuario
         if nombre:
-            usuario.username = nombre
+            usuario.nombre = nombre
         if correo:
             usuario.email = correo
         if contrasena:
@@ -129,8 +130,9 @@ def perfil(request):
 
         messages.success(request, 'Perfil actualizado correctamente')
         return redirect('usuario:perfil')
+    context = {'nombre': usuario.nombre, 'email': usuario.email}
 
-    return render(request, 'perfil.html', {'usuario': usuario})
+    return render(request, 'perfil.html', context)
 
 def editar_perfil(request):
     """Permite al usuario actualizar su nombre, correo y contraseña"""

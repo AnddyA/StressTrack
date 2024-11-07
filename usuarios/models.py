@@ -15,12 +15,3 @@ class Usuario(models.Model):
 
     def __str__(self):
         return self.nombre
-    
-    def is_admin(self):
-        return self.id_rol == 1
-    
-    def is_docente(self):
-        return self.id_rol == 2
-    
-    def is_estudiante(self):
-        return self.id_rol == 3

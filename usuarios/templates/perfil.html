@@ -1,10 +1,11 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Perfil de Usuario - StressTrack</title>
-    <link rel="stylesheet" href="../static/stylesPerfil.css">
+    <link rel="stylesheet" href="{% static '/stylesPerfil.css' %}">
 </head>
 <body>
     <header>
@@ -17,8 +18,8 @@
     <main class="main-content">
         <h2>Información Personal</h2>
         <div class="profile-info">
-            <p><strong>Nombre:</strong> {{ usuario.nombre }}</p>
-            <p><strong>Correo Electrónico:</strong> {{ usuario.email }}</p>
+            <p><strong>Nombre:</strong> {{ nombre }}</p>
+            <p><strong>Correo Electrónico:</strong> {{ email }}</p>
             <button id="editProfileBtn" class="action-btn edit">Editar Perfil</button>
         </div>
 

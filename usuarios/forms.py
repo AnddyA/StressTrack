@@ -19,6 +19,8 @@ class RegistroForm(forms.ModelForm):
         return user
 
 class UsuarioForm(forms.ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput)
+
     class Meta:
         model = Usuario
-        fields = ['nombre', 'email', 'password', 'id_rol']
+        fields = ['email', 'password']
