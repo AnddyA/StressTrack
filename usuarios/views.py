@@ -1,141 +1,116 @@
 from django.shortcuts import render, redirect
 from .forms import RegistroForm, UsuarioForm
 from django.urls import reverse_lazy
-from .models import Usuario
+from .models import Usuario, Rol
 from django.contrib.auth.hashers import check_password
 from django.contrib import messages
 from django.contrib.auth import login, authenticate
 from django.contrib.auth import get_user_model, logout
 from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import redirect
 
+def index(request):
+    return render(request, 'inicio/index.html')
 
-def registro_usuario(request):
+def register(request):
     if request.method == 'POST':
         form = RegistroForm(request.POST)
         if form.is_valid():
             form.save()
             messages.success(request, "Registro exitoso. Porfavor, inicia sesión")
-            print("todo bien")
-            return redirect('login')  # Redirige a la página de login
+            return redirect('index')
         else:
             messages.error(request, "Error en el registro. Verfica los datos e intenta nuevamente")
-            print("todo maso mal")
     else:
         form = RegistroForm()
-        print("todo mal")
-    return render(request, 'register.html', {'form': form})
-'''
-def login_usuario(request):
-    if request.method == 'POST':
-        form = UsuarioForm(data=request.POST)
-        print(request.POST['email'])
-        if form.is_valid():
-            email = form.cleaned_data.get('email')
-            password = form.cleaned_data.get('password')
-            user = authenticate(request, email=email, password=password)
-            if user:
-                login(request, user)
-                if user.is_admin():
-                    return redirect('admin_dashboard')
-                elif user.is_docente():
-                    return redirect('docente_dashboard')
-                elif user.is_estudiante():
-                    return redirect('estudiante_dashboard')
-        else:
-            print(form.errors)
-    else:
-        form = UsuarioForm()
-    return render(request, 'login.html', {'form': form})
-'''
+    return render(request, 'inicio/index.html', {'form': form})
 
-def login_usuario(request):
+def sign_in(request):
     if request.method == 'POST':
         email = request.POST.get('email')
-        password = request.POST.get('password')
+        password = request.POST.get('password')            
         try:
             user = Usuario.objects.get(email=email)
             
             if password == user.password: # Verifica la contraseña
-
+                messages.success(request, "Inicio de Sesion exitoso")
                 if user.id_rol.nombre_rol == 'Administrador':
-                    return redirect('administrador_dashboard')
+                    return redirect('administrador_index')
                 elif user.id_rol.nombre_rol == 'Docente':
-                    return redirect('docente_dashboard')
+                    return redirect('docente_index')
                 elif user.id_rol.nombre_rol == 'Estudiante':
-                    return redirect('estudiante_dashboard')
+                    return redirect('estudiante_index')
             else:
-                return render(request, 'login.html', {'error': 'Credenciales inválidas'})
+                return render(request, 'inicio/index.html', {'error': 'Credenciales inválidas'}) 
 
         except Usuario.DoesNotExist:
-            return render(request, 'login.html', {'error': 'Credenciales inválidas'})
+            return render(request, 'inicio/index.html', {'error': 'Credenciales inexistentes'})
 
-    return render(request, 'login.html')
+    return render(request, 'inicio/index.html')
 
-
-def administrador_dashboard(request):
+def administrador_index(request):
     usuarios = Usuario.objects.all()
-    return render(request, 'administrador_dashboard.html', {'usuarios':usuarios})
+    return render(request, 'admin/indexA.html', {'usuarios':usuarios})
 
-def docente_dashboard(request):
-    return render(request, 'docente_dashboard.html')
+def administrador_usu(request):
+    usuarios = Usuario.objects.all()
+    return render(request, 'admin/usuarioG.html', {'usuarios':usuarios})
 
-def estudiante_dashboard(request):
-    return render(request, 'estudiante_dashboard.html')
+def docente_index(request):
+    return render(request, 'docente/indexD.html')
+
+def estudiante_index(request):
+    return render(request, 'estudiante/indexE.html')
 
 
 def crear_usuario(request):
+    roles = Rol.objects.all()
+
     if request.method == 'POST':
         form = UsuarioForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('administrador_dashboard')
+            return redirect('administrador_usu')
+        else:
+            messages.error(request, "Error en el registro. Verfica los datos e intenta nuevamente")
     else:
         form = UsuarioForm()
-    return render(request, 'crear_usuario.html', {'form': form})
+    return render(request, 'admin/usuarioG.html', {'form': form, 'roles': roles} )
 
 def editar_usuario(request, usuario_id):
+    roles = Rol.objects.all()
     usuario = Usuario.objects.get(id=usuario_id)
+
     if request.method == 'POST':
         form = UsuarioForm(request.POST, instance=usuario)
         if form.is_valid():
             form.save()
-            return redirect('administrador_dashboard')
+            return redirect('administrador_usu')
     else:
         form = UsuarioForm(instance=usuario)
-    return render(request, 'editar_usuario.html', {'form': form, 'usuario': usuario})
+    return render(request, 'admin/editar_usuario.html', {'form': form, 'usuario': usuario, 'roles': roles})
 
 def eliminar_usuario(request, usuario_id):
     usuario = Usuario.objects.get(id=usuario_id)
     usuario.delete()
-    return redirect('administrador_dashboard')
+    return redirect('administrador_usu')
+
+def eliminar_cuenta(request, usuario_id):
+
+    usuario = Usuario.objects.get(id=usuario_id)
+    usuario.delete()
+    return render(request, 'inicio/index.html', {usuario:usuario_id})
 
 
 def perfil(request):
     usuario = request.user  # Obtiene el usuario actual
+    print(usuario)
 
-    if request.method == 'POST':
-        # Si el usuario desea actualizar su perfil
-        nombre = request.POST.get('nombre')
-        correo = request.POST.get('correo')
-        contrasena = request.POST.get('contrasena')
-        
-        # Actualiza los datos del usuario
-        if nombre:
-            usuario.nombre = nombre
-        if correo:
-            usuario.email = correo
-        if contrasena:
-            usuario.set_password(contrasena)
-        usuario.save()
-
-        messages.success(request, 'Perfil actualizado correctamente')
-        return redirect('usuario:perfil')
-    context = {'nombre': usuario.nombre, 'email': usuario.email}
-
-    return render(request, 'perfil.html', context)
+    return render(request, 'inicio/perfil.html', {'perfil': usuario})
 
 def editar_perfil(request):
-    """Permite al usuario actualizar su nombre, correo y contraseña"""
+
     usuario = request.user
 
     if request.method == 'POST':

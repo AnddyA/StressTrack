@@ -1,0 +1,49 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <title>Docente - StressTrack</title>
+    <link rel="stylesheet" href="{% static 'docente/styleD.css' %}">
+    <link rel="shortcut icon" href="../../static/img/icon.png">
+
+</head>
+<body>
+    <header class="header" id="home">
+        <div class="menu container">
+            <img src="../../static/img/iconStressName.png" alt="" id="logo">
+            <input type="checkbox" id="menu">
+            <label for="menu">
+                <img src="../../static/img/menu.png" class="menu-icon" alt="">
+            </label>
+            <nav class="navbar">
+                <ul>
+                    <li><a href="">Inicio</a></li>
+                    <li><a href="">Trabajos Academicos</a></li>
+                    <li><a href="">Test Estres</a></li>
+                    <li><a href="">Recomendaciones</a></li>
+                </ul>
+            </nav>
+            <div class="icons">
+                <a href="{% url 'perfil' %}" class="material-symbols-rounded">account_circle</a>
+                <a href="{% url 'index' %}" class="material-symbols-rounded">logout</a>
+            </div>
+        </div>
+        <div class="header-content container">
+            <div class="header-txt">
+                <h1>Bienvenido a la vista de Administrador</h1>
+                <h2>aqui el nombre del q inicio sesion</h2>
+                <p>Ayudamos a gestionar el estrés académico para un mejor rendimiento y bienestar.
+                </p>
+            </div>
+        </div>
+    </header>
+
+    <footer>
+        <p>StressTrack &copy; 2024. Todos los derechos reservados.</p>
+    </footer>
+</body>
+</html>

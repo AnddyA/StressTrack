@@ -40,10 +40,6 @@ header{
     padding: 32px 0px 24px 0px;
 }
 
-#logo{
-    height: 100px;
-}
-
 #container{
     display: flex;
     flex-direction: column;

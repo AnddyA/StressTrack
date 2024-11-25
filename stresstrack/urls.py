@@ -19,14 +19,24 @@ from django.urls import include, path
 from usuarios import views
 
 urlpatterns = [
-    path('', views.login_usuario, name='login'),
-    path('register/', views.registro_usuario, name='register'),
+    path('', views.index, name='index'),
+    path('sign_in/', views.sign_in, name='sign_in'),
+    path('register/', views.register, name='register'),
+
+
+    path('administrador/', views.administrador_index, name='administrador_index'),
+
+    path('administrador/usuarios/', views.administrador_usu, name='administrador_usu'),
+    path('administrador/usuarios/crear_usuario/', views.crear_usuario, name='crear_usuario'),
+    path('administrador/usuarios/editar_usuario/<int:usuario_id>/', views.editar_usuario, name='editar_usuario'),
+    path('administrador/usuarios/eliminar_usuario/<int:usuario_id>/', views.eliminar_usuario, name='eliminar_usuario'),
+
+    path('docente/', views.docente_index, name='docente_index'),
+
+    path('estudiante/', views.estudiante_index, name='estudiante_index'),
+
+
     path('usuario/', include('usuarios.urls')),
-    path('administrador/', views.administrador_dashboard, name='administrador_dashboard'),
-    path('docente/', views.docente_dashboard, name='docente_dashboard'),
-    path('estudiante/', views.estudiante_dashboard, name='estudiante_dashboard'),
-    path('administrador/crear_usuario/', views.crear_usuario, name='crear_usuario'),
-    path('administrador/editar_usuario/<int:usuario_id>/', views.editar_usuario, name='editar_usuario'),
-    path('administrador/eliminar_usuario/<int:usuario_id>/', views.eliminar_usuario, name='eliminar_usuario'),
+    
     path('superadmin/', admin.site.urls),
 ]
