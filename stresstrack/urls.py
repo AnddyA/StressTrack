@@ -38,5 +38,5 @@ urlpatterns = [
 
     path('usuario/', include('usuarios.urls')),
     
-    path('superadmin/', admin.site.urls),
+    path('admin/', admin.site.urls),
 ]

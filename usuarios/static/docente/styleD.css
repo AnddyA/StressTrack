@@ -24,6 +24,7 @@ body {
     min-height: 100vh;
     display: flex;
     align-items: center;
+    
 }
 
 .menu {
@@ -35,6 +36,12 @@ body {
     align-items: center;
     justify-content: space-between;
     z-index: 1000;
+    background-color: transparent;
+    /* Fondo blanco semitransparente */
+    backdrop-filter: blur(10px);
+    /* Aplica el difuminado al fondo */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    /* Sombra para resaltar el menú */
 }
 
 #logo {

@@ -2,14 +2,11 @@ from django.shortcuts import render, redirect
 from .forms import RegistroForm, UsuarioForm
 from django.urls import reverse_lazy
 from .models import Usuario, Rol
-from django.contrib.auth.hashers import check_password
 from django.contrib import messages
-from django.contrib.auth import login, authenticate
-from django.contrib.auth import get_user_model, logout
+from django.contrib.auth import login
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
-
 def index(request):
     return render(request, 'inicio/index.html')
 
@@ -29,12 +26,11 @@ def register(request):
 def sign_in(request):
     if request.method == 'POST':
         email = request.POST.get('email')
-        password = request.POST.get('password')            
+        password = request.POST.get('password')
         try:
             user = Usuario.objects.get(email=email)
-            
-            if password == user.password: # Verifica la contraseña
-                messages.success(request, "Inicio de Sesion exitoso")
+            if password == user.password:  # Compara la contraseña sin cifrar
+                messages.success(request, "Inicio de sesión exitoso")
                 if user.id_rol.nombre_rol == 'Administrador':
                     return redirect('administrador_index')
                 elif user.id_rol.nombre_rol == 'Docente':
@@ -42,11 +38,9 @@ def sign_in(request):
                 elif user.id_rol.nombre_rol == 'Estudiante':
                     return redirect('estudiante_index')
             else:
-                return render(request, 'inicio/index.html', {'error': 'Credenciales inválidas'}) 
-
+                return render(request, 'inicio/index.html', {'error': 'Credenciales inválidas'})
         except Usuario.DoesNotExist:
             return render(request, 'inicio/index.html', {'error': 'Credenciales inexistentes'})
-
     return render(request, 'inicio/index.html')
 
 def administrador_index(request):
@@ -104,10 +98,9 @@ def eliminar_cuenta(request, usuario_id):
 
 
 def perfil(request):
-    usuario = request.user  # Obtiene el usuario actual
-    print(usuario)
+    usuario = request.user  # Obtiene el usuario actual autenticado
+    return render(request, 'inicio/perfil.html', {'user': usuario})
 
-    return render(request, 'inicio/perfil.html', {'perfil': usuario})
 
 def editar_perfil(request):
 
@@ -130,7 +123,7 @@ def editar_perfil(request):
 
         usuario.save()
         messages.success(request, 'Perfil actualizado correctamente')
-        return redirect('usuarios:perfil_usuario')  # Redirige a la página de perfil
+        return redirect('perfil')  # Redirige a la página de perfil
 
     # Si no es POST, renderiza la página de edición de perfil
-    return render(request, 'usuarios/editar_perfil.html', {'usuario': usuario})
+    return render(request, 'usuarios/editar_perfil.html', {'user': usuario})
