@@ -1,11 +1,18 @@
 
 # Proyecto de Test de Estrés
+![que](https://github.com/user-attachments/assets/e89b4b4e-7ba7-4804-ad34-18b3f4324431)
 
 Este es un proyecto para gestionar y realizar tests de estrés en estudiantes.
 
 ## Requisitos
 
 - Python 3.x
+
+## Interfacez
+
+- ✅ UI Estudiante
+- ✅ UI Docente
+- ❌ UI Admin
 
 ## Funcionalidades Implementadas
 
@@ -81,7 +88,15 @@ pip install -r requirements.txt
 ```bash
 python manage.py runserver
 ```
-
+## Ingreso a DjangoAdmin
+email:
+```bash
+admin@unl.edu.ec
+```
+pasword:
+```bash
+admin
+```
 =======
 Sitio web para la gestion de estrés
 >>>>>>> origin/main
