@@ -81,7 +81,7 @@ source venv/bin/activate
 
 ### 4. Instalar dependencias
 ```bash
-pip install -r requirements.txt
+pip install -r requirements.py
 ```
 
 ### 5. Inciar la aplicación
@@ -97,6 +97,4 @@ pasword:
 ```bash
 admin
 ```
-=======
-Sitio web para la gestion de estrés
->>>>>>> origin/main
+
