@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Proyecto de Test de Estrés
 
 Este es un proyecto para gestionar y realizar tests de estrés en estudiantes.
@@ -81,3 +82,6 @@ pip install -r requirements.txt
 python manage.py runserver
 ```
 
+=======
+Sitio web para la gestion de estrés
+>>>>>>> origin/main
