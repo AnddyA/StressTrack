@@ -1,0 +1,299 @@
+{% extends "base/dashboard_base.html" %}
+
+{% load task_tag %}
+
+{% block content %}
+
+{% include "elements/dashboard_sidebar.html" with role=role %}
+
+{% include "elements/messages.html" %}
+
+
+<main class="main p-4 pe-5">
+    <div class="my-4">
+        <div class="row">
+            <div class="col-11 p-0">
+                <h1 class="m-0">Tests</h1>
+            </div>
+            {% if role == 'teacher' %}
+                <div class="col-1 d-flex flex-column justify-content-center">
+                    <button 
+                        class="fs-7 bg-white text-center rounded-4 border border-dark border-2 text-dark text-decoration-none py-1 px-2"
+                        data-bs-toggle="modal"
+                        data-bs-target="#addTestModal"
+                        >
+                        <i class="fa-solid fa-plus fs-8"></i> Nuevo
+                    </button>
+                </div>
+            {% endif %}
+        </div>
+        <label class="text-grisillo fw-bold my-2">Lista</label>
+        {% if role == 'student' %}
+            {% if not tests %}
+                <div class="bg-inf p-3 rounded-2 text-gris">
+                    <i class="fas fa-info-circle"></i> No tienes tests asignadas por el momento.
+                </div>
+            {% else %}
+                {% for test in tests %}
+                    <div class="p-3 my-2 rounded-2 text-gris border border-1">
+                        <div class="row">
+                            <div class="col-10">
+                                <i class="fa-solid fa-list me-3"></i>{{ test.title }}
+                            </div>
+                            <div class="col-2 text-end">
+                                {% if not test.state %}
+                                    <div class="ms-4 p-1 d-inline rounded-4 fs-7">
+                                        <a href="{% url 'test' test.test %}" class="text-decoration-none border border-dark text-dark py-1 px-3 rounded-3 fs-7">Realizar Test</a>
+                                    </div>
+                                {% else %}
+                                    <div class="ms-4 bg-color-grisillo py-1 px-3 border d-inline rounded-3 fs-7">
+                                        Completado
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}    
+            {% endif %}
+        {% endif %}
+        {% if role == 'teacher' %}
+            {% if teacher_tests %}
+                {% for test in teacher_tests %}
+                    <div class="p-3 my-2 rounded-2 text-gris border border-1">
+                        <div class="row">
+                            <div class="col-6">
+                                <i class="fa-solid fa-list me-3"></i>{{ test.title }}
+                            </div>
+                            <div class="col-5">
+                                <a href="#" 
+                                    class="mx-1 text-decoration-none text-gris assign-test" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#assignTestModal{{ test.id }}"
+                                    title="Asignar test"
+                                    data-test='{"id": "{{ test.id }}"}'
+                                >
+                                    <i class="fa-solid fa-users"></i>
+                                    Asignar test
+                                </a>
+                            </div>
+                            <div class="col-1 text-center">
+                                <a href="" class="mx-1 text-decoration-none text-not-bad" title="Editar">
+                                    <i class="fa-solid fa-pencil"></i>
+                                </a>
+                                <a  href="{% url 'delete-test' test.id %}" 
+                                    class="mx-1 text-decoration-none text-dying" 
+                                    title="Eliminar"
+                                    id="delete-task-{{ test.id }}"
+                                >
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade" id="assignTestModal{{ test.id }}" tabindex="-1" aria-labelledby="assignTestModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title fw-bold" id="assignTestModalLabel">Asignar Test</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    {% if groups %}
+                                        <p class="fs-8 text-muted mb-3 p-2 bg-inf rounded-3">
+                                            <i class="fas fa-info-circle"></i> Selecciona los grupos a los que deseas asignar este test.
+                                        </p>
+                                        <form method="post" id="assignTestForm" class="p-2" data-test="{{ test.id }}">
+                                            {% csrf_token %}
+                                            <h5 class="fs-6 mb-3">Lista de grupos</h5>
+                                            {% for group in groups %}
+                                                {% is_group_assigned_to_test test group as is_assigned %}
+                                                <div class="form-check">
+                                                    <input 
+                                                        class="form-check-input" 
+                                                        type="checkbox" 
+                                                        name="groups[]" 
+                                                        value="{{ group.id }}" 
+                                                        id="group{{ group.id }}"
+
+                                                        {% if is_assigned %}
+                                                            checked
+                                                        {% endif %}
+                                                    >
+                                                    <label class="fs-7" for="group{{ group.id }}">
+                                                        {{ group.name }}
+                                                    </label>
+                                                </div>
+                                            {% endfor %}
+                                            <input hidden name="test-id" value="{{ test.id }}" >
+                                            <button type="submit" 
+                                                    class="fs-7 bg-dark text-white border border-dark rounded-2 py-1 px-3 mt-4"
+                                                    name="assign-test-form"
+                                                    id="assign-test-form"
+                                                    value="assign-test-form"
+                                            >
+                                                Asignar
+                                            </button>
+                                        </form>
+                                    {% else %}
+                                        <p class="fs-8 text-muted mb-3 p-2 bg-inf rounded-3">
+                                            <i class="fas fa-info-circle"></i> Para poder asignar un test, es necesario crear primero al menos un grupo. Una vez que hayas creado un grupo, podrás asignar los tests.
+                                        </p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="bg-inf p-3 rounded-2 text-gris">
+                    <i class="fas fa-info-circle"></i> No existen tests por el momento.
+                </div>
+            {% endif %}
+                    
+        {% endif %}
+    </div>
+</main>
+
+
+{% if role == 'teacher' %}
+
+    <div class="modal fade" id="addTestModal" tabindex="-1" aria-labelledby="addTaskModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="addTaskModalLabel">Crear Test</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                {% if teaching %}
+                    <div class="modal-body">
+                        <form id="taskForm" method="post" >
+                            {% csrf_token %}
+                            <div class="mb-4">
+                                <label for="title" class="d-block pb-1 fs-6 fw-bold">Título</label>
+                                <input type="text" class="w-100 fs-7 py-1 px-2 border border-1 border-dark rounded-2" id="title" name="title" required>
+                            </div>
+                            <p class="fs-8 text-muted mb-3 p-2 bg-inf rounded-3">
+                                <i class="fas fa-info-circle"></i> <strong>Nota:</strong> Todas las preguntas tendrán las mismas opciones de respuesta: <strong>Siempre, Casi siempre, A veces, Rara vez, Nunca</strong>.
+                            </p>
+                            <div class="mb-2">
+                                <div class="row">
+                                    <div class="col-11">
+                                        <label class="pb-1 fs-6 fw-bold">Preguntas</label>
+                                    </div>
+                                    <div class="col-1 d-flex justify-content-center">
+                                        <button
+                                            type="button"
+                                            id="btn-add-quest"
+                                            title="Agregar pregunta"
+                                            class="fs-7 bg-white text-center text-dark border-0 text-decoration-none">
+                                            <i class="fa-solid fa-plus-circle"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="mb-4 container-quests">
+                                
+                            </div>
+
+                            <button type="submit" class="fs-7 bg-dark text-white border border border-dark rounded-2 py-1 px-3">Crear</button>
+                        </form>
+                    </div>
+                {% else %}
+                    <div class="modal-body">
+                        <p class="p-3 rounded-2 text-gris">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Actualmente no estás asignado a ningún curso, por lo que no es posible crear tests en este momento.
+                        </p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+{% endif %}
+
+{% if teacher_tests %}
+<script>
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const deleteLinks = document.querySelectorAll('a[id^="delete-task-"]');
+
+        deleteLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                Swal.fire({
+                    title: '¿Estás seguro?',
+                    text: 'Este test se eliminará permanentemente.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sí, eliminar',
+                    cancelButtonText: 'Cancelar',
+                    reverseButtons: true,
+                    confirmButtonColor: "#ff5656"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = link.getAttribute('href');
+                    }
+                });
+            });
+        });
+    });
+    
+    /*document.addEventListener('DOMContentLoaded', function () {
+    // Evento delegado para capturar dinámicamente los clics en botones .assign-test
+    document.body.addEventListener('click', function (event) {
+        if (event.target.closest('.assign-test')) {
+            const button = event.target.closest('.assign-test');
+            const testData = JSON.parse(button.getAttribute('data-test'));
+
+            const form = document.getElementById('assignTestForm');
+            if (form) {
+                form.setAttribute('test-id', testData.id);
+            }
+        }
+    });
+    });*/
+
+    
+    document.getElementById('btn-add-quest').addEventListener('click', function (e) {
+        e.preventDefault();
+
+        const questContainer = document.createElement('div');
+        questContainer.classList.add('row', 'mb-3');
+
+        const colInput = document.createElement('div');
+        colInput.classList.add('col-11');
+        const inputQuestion = document.createElement('input');
+        inputQuestion.type = 'text';
+        inputQuestion.classList.add('w-100', 'fs-7', 'py-1', 'px-2', 'border', 'border-1', 'border-dark', 'rounded-2');
+        inputQuestion.name = 'questions[]';
+        colInput.appendChild(inputQuestion);
+
+        const colButton = document.createElement('div');
+        colButton.classList.add('col-1', 'text-center', 'd-flex', 'justify-content-center', 'p-0');
+        const btnDelete = document.createElement('button');
+        btnDelete.type = 'button';
+        btnDelete.classList.add('fs-7', 'bg-white', 'border-0', 'm-0', 'p-0');
+        btnDelete.innerHTML = '<i class="fa-solid fa-minus-circle"></i>';
+
+        btnDelete.addEventListener('click', function() {
+            questContainer.remove();
+        });
+
+        colButton.appendChild(btnDelete);
+
+        questContainer.appendChild(colInput);
+        questContainer.appendChild(colButton);
+
+        document.querySelector('.container-quests').appendChild(questContainer);
+    });
+
+</script>
+
+{% endif %}
+
+
+{% endblock %}
