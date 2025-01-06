@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # Proyecto de Test de Estrés
 
 Este es un proyecto para gestionar y realizar tests de estrés en estudiantes.
