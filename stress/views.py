@@ -396,7 +396,3 @@ def delete_team(request, team_id):
     messages.success(request, 'El grupo se ha eliminado correctamente')
     return redirect('course')
 
-
-@login_required
-def prueba(request):
-    return render(request, 'aiuda.html')
