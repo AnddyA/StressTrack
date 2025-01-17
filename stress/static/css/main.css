@@ -57,8 +57,9 @@ body {
 }
 
 .fs-8 {
-  font-size: .7rem;
+  font-size: .7rem !important;
 }
+
 
 .my-4_5 {
   margin: 2rem 0;
@@ -67,6 +68,15 @@ body {
 .mb-4_5 {
   margin-bottom: 2rem;
 }
+
+.bg-active {
+  background-color: #e8ffee;
+}
+
+.bg-incative {
+  background-color: #ffdfdf;
+}
+
 
 .bg-good {
   background-color: #dbffe4;
@@ -82,6 +92,10 @@ body {
 
 .bg-dying {
   background-color: #ffcccc;
+}
+
+.bg-noti {
+  background-color: #ff7171;
 }
 
 .bg-inf {
@@ -110,7 +124,7 @@ body {
 }
 
 .text-gris {
-  color: #8f8f8f;
+  color: #8f8f8f !important;
   font-size: .9rem;
 }
 

@@ -32,6 +32,16 @@ class Team(models.Model):
     def __str__(self):
         return f"{self.name}"
 
+
+class Recommendation(models.Model):
+    title = models.CharField(max_length=255)
+    description = models.CharField(max_length=255)
+    min_percent = models.IntegerField()
+    max_percent = models.IntegerField()
+    
+    def __str__(self):
+        return self.title
+
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     ROLE_CHOICES = [
         ('student', 'Alumno'),
@@ -50,6 +60,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     stress = models.IntegerField(default=0)
     share_stress_level = models.BooleanField(default=False)
+    recommendation = models.ForeignKey(Recommendation, on_delete=models.SET_NULL, null=True, blank=True, related_name='users')
 
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='students', null=True, blank=True)
     group = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='members', null=True, blank=True)
@@ -60,7 +71,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = []
 
     def __str__(self):
-        return f"{self.email} ({self.get_role_display()})"
+        return f"{self.first_name} {self.last_name}"
 
 class Task(models.Model):
     title = models.CharField(max_length=200)
@@ -72,8 +83,11 @@ class Task(models.Model):
 
 class Test(models.Model):
     title = models.CharField(max_length=255)
+    due_date = models.DateField(blank=True, null=True)
     Team = models.ManyToManyField(Team, related_name='tests')
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='tests', default='2')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"{self.title}"
@@ -99,4 +113,13 @@ class Answer(models.Model):
 
     def __str__(self):
         return f"{self.student} = {self.question} -> {self.option}"
+
+class Notification(models.Model):
+    message = models.CharField(max_length=255)
+    is_read = models.BooleanField(default=False)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='notifications')
+    url = models.CharField(max_length=30)
+
+    def __str__(self):
+        return f"{self.message} | {self.user}"
 
