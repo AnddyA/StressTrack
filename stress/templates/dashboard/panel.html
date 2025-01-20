@@ -11,9 +11,8 @@
         <div class="row">
             {% if role == 'student' %}
                 <div class="col-10">
-                    <p>{{role}}</p>
                     <h1>Hola {{ name }}</h1>
-                    <p class="fs-6 m-0">Tus niveles de estrés son {{ stress }}.
+                    <p class="fs-6 m-0"> {{ recommendation.description }}
                     </p>
                 </div>
                 <div class="col-2 text-center">
@@ -22,7 +21,6 @@
                 </div>
             {% else %}
                 <div class="col-12">
-                    <p>{{role}}</p>
                     <h1>Hola {{ name }}</h1>
                     <p class="fs-6 text-gris m-0">
                         ¡Que tengas un excelente día!

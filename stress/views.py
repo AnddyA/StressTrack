@@ -79,6 +79,16 @@ def panel(request):
     stress = user.stress
     color = ""
 
+    recommendations = Recommendation.objects.filter(
+        min_percent__lte=stress, 
+        max_percent__gte=stress
+    )
+
+    if recommendations.exists():
+        recommendation = recommendations.order_by('?').first()
+    else:
+        recommendation = None
+
     if 0 <= stress <= 20:
         color = 'bg-good'
     elif 20 < stress <= 40:
@@ -91,6 +101,7 @@ def panel(request):
     context = {
         'name': user.first_name or "Usuario",
         'color': color,
+        'recommendation': recommendation,
         'stress': stress,
         'role': user.role,
         'top_3_stressed_students': top_3_stressed_students,
@@ -203,6 +214,49 @@ def list_tests(request):
 
             messages.success(request, "Se ha asignado el test correctamente")
             return redirect('list-test')
+        
+        elif 'assign-test-form-user' in request.POST:
+
+            test_id = request.POST.get('test-id')
+            test = get_object_or_404(Test, id=test_id)
+
+            selected_student_ids = request.POST.getlist('students[]')
+
+            selected_students = CustomUser.objects.filter(id__in=selected_student_ids)
+
+            for student in CustomUser.objects.all():
+                student.tests.remove(test)
+
+            for student in selected_students:
+                student.tests.add(test)
+
+            notify(request, users=selected_students, message='Se agregado un nuevo test', url='list-test')
+            messages.success(request, "Test asignado/desasignado correctamente.")
+
+            return redirect('list-test')
+        
+        elif 'assign-test-form-all' in request.POST:
+            is_checked = 'course-form' in request.POST
+    
+            test_id = request.POST.get('test-id')
+            test = get_object_or_404(Test, id=test_id)
+
+            course = user.teaching_courses.first()
+
+            students = course.students.all()
+
+            if is_checked:
+                for student in students:
+                    student.tests.add(test)
+                notify(request, users=students, message='Se agregado un nuevo test', url='list-test')
+                messages.success(request, "Se ha asignado el test correctamente")
+            else:
+                for student in students:
+                    student.tests.remove(test)
+                messages.success(request, "Se ha desasignado el test correctamente")
+
+            return redirect('list-test')
+        
         elif 'edit-test-form' in request.POST:
             test_id = request.POST.get('test-id')
             test_title = request.POST.get('title')
@@ -233,12 +287,19 @@ def list_tests(request):
             
             messages.success(request, 'Se ha creado el test')
             return redirect('list-test')
-
-    if team:
-        tests = team.tests.all()
-    else:
-        tests = None
     
+    if team:
+        tests_group = team.tests.all()
+    else:
+        tests_group = None
+    
+    tests_user = user.tests.all()
+
+    if tests_group:
+        tests = tests_group.union(tests_user)
+    else:
+        tests = tests_user
+
     list_test = []
 
     if tests:
@@ -263,6 +324,11 @@ def list_tests(request):
         groups = None
         teaching = None
 
+    if user.role == 'teacher':
+        students = teaching.students.all()
+    else:
+        students = None
+
     context = {
         'tests': list_test,
         'role': user.role,
@@ -270,6 +336,7 @@ def list_tests(request):
         'groups': groups,
         'teaching': teaching,
         'notifications': user.notifications.all(),
+        'students': students,
         'unread_notifications': user.notifications.filter(is_read=False).count(),
         'open_modal': request.GET.get('open_modal', 'false') == 'true',
     }
@@ -375,6 +442,7 @@ def test(request, test_id):
 
     if request.method == 'POST':
         tmp_stress = 0
+        num_questions = questions.count()
         for question in questions:
             selected_option_value = request.POST.get(f'question_{question.id}')
             if selected_option_value:
@@ -385,11 +453,15 @@ def test(request, test_id):
                 )
                 tmp_stress += int(selected_option_value)
         
-        request.user.stress = tmp_stress
+        avg_stress = tmp_stress / num_questions
+
+        request.user.stress = (avg_stress / 5) * 100
         request.user.save()
+
         if request.user.stress > 50:
             teacher = test.course.teacher
             notify(request, [teacher], f'El estudiante {request.user.first_name} tiene un nivel elevado de estres', 'course')
+        
         messages.success(request, 'El test se ha completado satisfactoriamente')    
         return redirect('list-test')
         
@@ -449,12 +521,6 @@ def delete_team(request, team_id):
     messages.success(request, 'El grupo se ha eliminado correctamente')
     return redirect('course')
 
-
-@login_required
-def prueba(request):
-    return render(request, 'aiuda.html')
-
-
 @login_required
 def mark_notification_as_read(request, notification_id):
     notification = get_object_or_404(Notification, id=notification_id, user=request.user)
@@ -464,7 +530,6 @@ def mark_notification_as_read(request, notification_id):
         notification.save()
     
     return redirect(notification.url)
-
 
 @login_required
 def notify(request, users, message, url):
@@ -569,28 +634,57 @@ def change_state_user(request, user_id):
 
 @login_required
 def course_admin(request):
-
     form = CreateCourseForm()
+
+    if request.method == 'POST' and 'students' in request.POST:
+        course_id = request.POST.get('course_id')
+        student_ids = request.POST.getlist('students')
+        course = Course.objects.get(id=course_id)
+
+        for student_id in student_ids:
+            student = CustomUser.objects.get(id=student_id, role='student')
+
+            if student.course != course:  # i need check this
+                student.group = None
+            student.course = course
+            student.save()
+
+        messages.success(request, 'Estudiantes asignados correctamente al curso.')
+        return redirect('courses')
     
     if request.method == 'POST':
-        form = CreateCourseForm(request.POST)
-        
-        if form.is_valid():
-            course = form.save()
-            messages.success(request, 'El curso se ha creado satisfactoriamente')
-            return redirect('courses')
-    
-    user = request.user
+        if 'course_id' in request.POST:
+            course_id = request.POST.get('course_id')
+            course = Course.objects.get(id=course_id)
+            form = CreateCourseForm(request.POST, instance=course)
+            if form.is_valid():
+                form.save()
+                messages.success(request, 'El curso se ha actualizado satisfactoriamente')
+                return redirect('courses')
+        else:
+            form = CreateCourseForm(request.POST)
+            if form.is_valid():
+                form.save()
+                messages.success(request, 'El curso se ha creado satisfactoriamente')
+                return redirect('courses')
 
+    user = request.user
     courses = Course.objects.all()
+    teachers = CustomUser.objects.filter(role='teacher')
+    students = CustomUser.objects.filter(role='student')
+
+    print(students)
 
     context = {
         'role': user.role,
         'courses': courses,
         'form': form,
+        'teachers': teachers,
+        'students': students,
     }
 
     return render(request, 'dashboard/course-admin.html', context)
+
 
 @login_required
 def delete_course(request, course_id):
