@@ -100,6 +100,7 @@ def panel(request):
     
     context = {
         'name': user.first_name or "Usuario",
+        'surname': user.last_name or "Usuario",
         'color': color,
         'recommendation': recommendation,
         'stress': stress,
@@ -138,6 +139,7 @@ def panel(request):
     context['test'] = test
     
     return render(request, 'dashboard/panel.html', context)
+
 
 @login_required
 def list_tasks(request):
@@ -464,6 +466,7 @@ def test(request, test_id):
         
         messages.success(request, 'El test se ha completado satisfactoriamente')    
         return redirect('list-test')
+        
         
     context = {
         'role': request.user.role,
