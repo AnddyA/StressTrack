@@ -12,7 +12,7 @@ Este es un proyecto para gestionar y realizar tests de estrés en estudiantes.
 
 - ✅ UI Estudiante
 - ✅ UI Docente
-- ❌ UI Admin
+- ✅ UI Admin
 
 ## Funcionalidades Implementadas
 
@@ -41,19 +41,21 @@ Este es un proyecto para gestionar y realizar tests de estrés en estudiantes.
 - [x] **Eliminar test**: (profesores)
 - [x] **Modificar test**: (profesores)
 - [x] **Notificaciones**: (estudiantes, profesores, administradores)
+- [x] **Registro de usuario**: (profesores, administradores)
+- [x] **Agregar curso**: (administradores)
+- [x] **Modificar curso**: (administradores)
+- [x] **Eliminar curso**: (administradores)
+- [x] **Agregar recomendacion**: (profesores, administradores)
+- [x] **Modificar recomendacio**: (profesores, administradores)
+- [x] **Eliminar recomendacion**: (profesores, administradores)
+- [x] **Estadisticas**: (profesores)
 
 
 ### Funcionalidades en Desarrollo 🚀
-- [-] **Registro de usuario**: (profesores, administradores)
-- [-] **Agregar curso**: (administradores)
-- [-] **Modificar curso**: (administradores)
-- [-] **Eliminar curso**: (administradores)
-- [-] **Agregar recomendacion**: (profesores, administradores)
 
 ### Funcionalidades Pendientes ⏳
-- [ ] **Modificar recomendacio**: (profesores, administradores)
-- [ ] **Eliminar recomendacion**: (profesores, administradores)
-- [ ] **Estadisticas**: (profesores)
+- [ ] **Estadisticas**: (profesores, estudiantes)
+- [ ] **Test base**: (administradores)
 
 ## Instalación
 
