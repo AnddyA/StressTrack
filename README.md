@@ -49,13 +49,13 @@ Este es un proyecto para gestionar y realizar tests de estrés en estudiantes.
 - [x] **Modificar recomendacio**: (profesores, administradores)
 - [x] **Eliminar recomendacion**: (profesores, administradores)
 - [x] **Estadisticas**: (profesores)
+- [x] **Estadisticas**: (profesores, estudiantes)
+- [x] **Test base**: (administradores)
 
 
 ### Funcionalidades en Desarrollo 🚀
 
 ### Funcionalidades Pendientes ⏳
-- [ ] **Estadisticas**: (profesores, estudiantes)
-- [ ] **Test base**: (administradores)
 
 ## Instalación
 
