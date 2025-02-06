@@ -1,53 +1,28 @@
 body {
   height: 100vh;
+  
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: 5rem 1fr;
   grid-template-areas:
-    "header"
-    "main";
-
+  "header"
+  "main";
+  
   background: url("../img/background.jpg") no-repeat center center fixed;
   background-size: cover;
+  position: relative;
 }
 
-.contenedor{
-
-  /* Agregar un degradado transparente */
-  background: transparent(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url("../img/background.jpg") no-repeat center center fixed;
-
-  /* Otras propiedades para que se ajuste al contenido */
-  padding: 2rem; /* Espaciado interno */
-  width: 60%;
-  margin: 0 auto;
-  border-radius: 20px; /* Bordes redondeados */
-  backdrop-filter: blur(10px); /* Desenfoque del fondo (opcional) */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra para destacar el contenedor */
-}
-
-.conteregister{
-  background: transparent(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url("../img/background.jpg") no-repeat center center fixed;
-  backdrop-filter: blur(10px);
-  width: 500px;
-  border-radius: 20px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra para destacar el contenedor */
-
-
-}
-
-.contelogin{
-  background: transparent(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url("../img/background.jpg") no-repeat center center fixed;
-  backdrop-filter: blur(10px);
-  width: 85%;
-  border-radius: 20px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra para destacar el contenedor */
-
-}
-
-.information{
-  background: transparent(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url("../img/background.jpg") no-repeat center center fixed;
-  backdrop-filter: blur(10px);
-
+body::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: inherit;
+  filter: brightness(50%); /* Reduce el brillo al 50% */
+  z-index: -1;
 }
 
 ::-webkit-scrollbar {
@@ -76,7 +51,6 @@ body {
 
 .main {
   grid-area: main;
-  
 }
   
 .fs-7 {
@@ -132,11 +106,3 @@ body {
 .bg-color-grisillo {
   background-color: #ececec;
 }
-
-.text-azul {
-color: #031926;
-}
-
-.text-azulillo {
-  color: #9DBEBB;
-  }

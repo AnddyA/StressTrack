@@ -4,8 +4,8 @@
 
 {% include "elements/messages.html" %}
 <main class="main container d-flex flex-column justify-content-center align-items-center">
-    <div class=" container d-flex flex-column justify-content-center align-items-center">
-        <h1 class=" text-white border-dark p-0 my-4">Iniciar Sesión</h1>
+    <div class="container d-flex flex-column justify-content-center align-items-center">
+        <h1 class="text-white border-dark p-0 my-4">Iniciar Sesión</h1>
         <form method="POST" class="text-white custom-container w-25">
             {% csrf_token %}
 
@@ -19,7 +19,7 @@
                 {{ form.password }}
             </div>
             <div class="text-end text-dark mb-4 fs-8">
-                <a class="text-dark" href="{% url 'password_reset' %}">¿Olvidaste la contraseña?</a>
+                <a class="text-white" href="{% url 'password_reset' %}">¿Olvidaste la contraseña?</a>
             </div>
 
             <div class="d-flex justify-content-center">
@@ -28,10 +28,10 @@
             </div>
 
             <div class="text-center py-2 fs-8">
-                <p>¿No tienes una cuenta? <a class="text-dark d-inline" href="{% url 'register' %}">Registrate</a></p>
+                <p>¿No tienes una cuenta? <a class="text-white d-inline" href="{% url 'register' %}">Registrate</a></p>
             </div>
             <div class="text-center py-2 fs-8">
-                <p><a class="text-dark d-inline" href="{% url 'home' %}"><i class="fa-solid fa-arrow-left fs-8"></i>  Volver</a></p>
+                <p><a class="text-white d-inline" href="{% url 'home' %}"><i class="fa-solid fa-arrow-left fs-8"></i>  Volver</a></p>
             </div>
         </form>
     </div>
