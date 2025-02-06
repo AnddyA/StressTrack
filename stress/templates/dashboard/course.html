@@ -24,6 +24,13 @@
         </div>
       {% endif %}
     </div>
+
+    <div class="row my-3">
+            <div class="col-12">
+                <input type="text" id="searchInput" class="form-control" placeholder="Buscar usuarios...">
+            </div>
+        </div>
+
     {% if not course %}
       {% if role == 'student' %}
         <div class="bg-inf p-3 rounded-2 text-gris my-4">
@@ -44,7 +51,7 @@
         </div>
       {% else %}
         {% for student in students %}
-            <div class="p-3 my-2 rounded-2 text-gris border border-1">
+            <div class="p-3 my-2 rounded-2 text-gris border border-1 student-item">
                 <div class="row">
                     <div class="col-5">
                         <i class="fa-solid fa-user me-3"></i>{{ student.first_name }} {{ student.last_name }}
@@ -92,7 +99,7 @@
       
       <label class="text-grisillo fw-bold my-2">Profesor</label>
       {% if teacher %}
-            <div class="p-3 my-2 rounded-2 text-gris border border-1">
+            <div class="p-3 my-2 rounded-2 text-gris border border-1 student-item">
               <div class="row">
                 <div class="col-12">
                   <i class="fa-solid fa-user-tie me-3"></i> {{ teacher.first_name }} {{ teacher.last_name }}
@@ -331,6 +338,20 @@
         hiddenInput.value = taskId;
         
         this.appendChild(hiddenInput);
+    });
+
+    document.getElementById('searchInput').addEventListener('input', function() {
+        const searchValue = this.value.toLowerCase();
+        const studentItems = document.querySelectorAll('.student-item');
+
+        studentItems.forEach(function(item) {
+            const name = item.querySelector('.col-5').textContent.toLowerCase();
+            if (name.includes(searchValue)) {
+                item.style.display = '';
+            } else {
+                item.style.display = 'none';
+            }
+        });
     });
 
 </script>

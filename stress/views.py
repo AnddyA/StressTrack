@@ -97,6 +97,7 @@ def panel(request):
     
     context = {
         'name': user.first_name or "Usuario",
+        'surname': user.last_name or "Usuario",
         'color': color,
         'recommendation': recommendations,
         'stress': stress,

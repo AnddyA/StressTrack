@@ -23,6 +23,13 @@
                     </div>
             {% endif %}
         </div>
+
+        <div class="row my-3">
+            <div class="col-12">
+                <input type="text" id="searchInput" class="form-control" placeholder="Buscar tareas...">
+            </div>
+        </div>
+
         <label class="text-grisillo fw-bold my-2">
             {% if course %}
                 {{ course.name }}
@@ -37,7 +44,7 @@
         {% else %}
             {% for task in tasks %}
                 {% if role == 'student' %}
-                    <div class="p-3 my-2 rounded-2 text-gris border border-1">
+                    <div class="p-3 my-2 rounded-2 text-gris border border-1 task-item">
                         <div class="row">
                             <div class="col-10">
                                 <i class="fa-solid fa-list me-3"></i>{{ task.title }}
@@ -50,7 +57,7 @@
                         </div>
                     </div>
                 {% else %}
-                    <div class="p-3 my-2 rounded-2 text-gris border border-1">
+                    <div class="p-3 my-2 rounded-2 text-gris border border-1 task-item">
                         <div class="row">
                             <div class="col-7">
                                 <i class="fa-solid fa-list me-3"></i>{{ task.title }}
@@ -206,6 +213,20 @@
             });
         });
     });
+
+    document.getElementById('searchInput').addEventListener('input', function() {
+            const searchValue = this.value.toLowerCase();
+            const taskItems = document.querySelectorAll('.task-item');
+
+            taskItems.forEach(function(item) {
+                const title = item.querySelector('.col-7, .col-10').textContent.toLowerCase();
+                if (title.includes(searchValue)) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
 </script>
 
 {% endif %}

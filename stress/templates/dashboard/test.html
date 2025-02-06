@@ -29,6 +29,196 @@
                 </div>
             {% endif %}
         </div>
+        <div class="row my-3">
+            <div class="col-12">
+                <input type="text" id="searchInput" class="form-control" placeholder="Buscar tests...">
+            </div>
+        </div>
+
+        <label class="text-grisillo fw-bold my-2">Test base</label>
+        {% if role == 'teacher' %}
+            {% if teacher_tests %}
+                {% for test in teacher_tests %}
+                    {% if test.title == "TEST A-CEA" %}
+                        <div class="p-3 my-2 rounded-2 text-gris border border-1 test-item">
+                            <div class="row">
+                                <div class="col-5">
+                                    <i class="fa-regular fa-pen-to-square me-3"></i>{{ test.title }}
+                                </div>
+                                <div class="col-2">
+                                    <a href="#" 
+                                        class="mx-1 text-decoration-none text-gris assign-test" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#assignTestModal{{ test.id }}"
+                                        title="Asignar test"
+                                        data-test='{"id": "{{ test.id }}"}'
+                                    >
+                                        <i class="fa-solid fa-users"></i>
+                                        Asignar test
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal fade" id="assignTestModal{{ test.id }}" tabindex="-1" aria-labelledby="assignTestModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title fw-bold" id="assignTestModalLabel">Asignar Test</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h1 class="fs-6">Asignar por curso</h1>
+                                        {% is_test_assigned_to_all_students test teaching as is_assigned_course %}
+
+                                        <form method="post" id="assignTestFormCourse" class="p-2 mb-4" data-test="{{ test.id }}">
+                                            {% csrf_token %}
+                                            <input hidden name="test-id" value="{{ test.id }}" >
+                                            <div class="form-check">
+                                                <input 
+                                                    class="form-check-input" 
+                                                    type="checkbox" 
+                                                    name="course-form"
+                                                    {% if is_assigned_course %}
+                                                        checked
+                                                    {% endif %}
+                                                >
+                                                <label class="fs-7">
+                                                    {{ teaching.name }}
+                                                </label>
+                                            </div>
+                                            <button type="submit" 
+                                                    class="fs-7 bg-dark text-white border border-dark rounded-2 py-1 px-3 mt-4"
+                                                    name="assign-test-form-all"
+                                                    id="assign-test-form-all"
+                                                    value="assign-test-form-all"
+                                            >
+                                                Asignar
+                                            </button>
+                                        </form>
+
+                                        <h1 class="fs-6">Asignar por grupos</h1>
+                                        {% if groups %}
+                                            <form method="post" id="assignTestForm" class="p-2 mb-4" data-test="{{ test.id }}">
+                                                {% csrf_token %}
+                                                <h5 class="fs-6 mb-3">Lista de grupos</h5>
+                                                {% for group in groups %}
+                                                    {% is_group_assigned_to_test test group as is_assigned %}
+                                                    <div class="form-check">
+                                                        <input 
+                                                            class="form-check-input" 
+                                                            type="checkbox" 
+                                                            name="groups[]" 
+                                                            value="{{ group.id }}" 
+                                                            id="group{{ group.id }}"
+
+                                                            {% if is_assigned %}
+                                                                checked
+                                                            {% endif %}
+                                                        >
+                                                        <label class="fs-7" for="group{{ group.id }}">
+                                                            {{ group.name }}
+                                                        </label>
+                                                    </div>
+                                                {% endfor %}
+                                                <input hidden name="test-id" value="{{ test.id }}" >
+                                                <button type="submit" 
+                                                        class="fs-7 bg-dark text-white border border-dark rounded-2 py-1 px-3 mt-4"
+                                                        name="assign-test-form"
+                                                        id="assign-test-form"
+                                                        value="assign-test-form"
+                                                >
+                                                    Asignar
+                                                </button>
+                                            </form>
+                                        {% else %}
+                                            <p class="fs-8 text-muted mb-3 p-2 bg-inf rounded-3 mb-4">
+                                                <i class="fas fa-info-circle"></i> Para poder asignar un test, es necesario crear primero al menos un grupo. Una vez que hayas creado un grupo, podrás asignar los tests.
+                                            </p>
+                                        {% endif %}
+                                        <h1 class="fs-6">Asignar por estudiante</h1>
+                                        {% if students %}
+                                            <form method="post" id="assignTestFormUser" class="p-2 mb-4" data-test="{{ test.id }}">
+                                                {% csrf_token %}
+                                                <h5 class="fs-6 mb-3">Lista de estudiantes</h5>
+                                                {% for student in students %}
+                                                    {% is_test_assigned_to_user test student as is_assigned_user %}
+                                                    <div class="form-check">
+                                                        <input 
+                                                            class="form-check-input" 
+                                                            type="checkbox" 
+                                                            name="students[]" 
+                                                            value="{{ student.id }}" 
+                                                            id="student{{ student.id }}"
+
+                                                            {% if is_assigned_user %}
+                                                                checked
+                                                            {% endif %}
+                                                        >
+                                                        <label class="fs-7" for="student{{ student.id }}">
+                                                            {{ student.first_name }} {{ student.last_name }}
+                                                        </label>
+                                                    </div>
+                                                {% endfor %}
+                                                <input hidden name="test-id" value="{{ test.id }}" >
+                                                <button type="submit" 
+                                                        class="fs-7 bg-dark text-white border border-dark rounded-2 py-1 px-3 mt-4"
+                                                        name="assign-test-form-user"
+                                                        id="assign-test-form-user"
+                                                        value="assign-test-form-user"
+                                                >
+                                                    Asignar
+                                                </button>
+                                            </form>
+                                        {% else %}
+                                            <p class="fs-8 text-muted mb-3 p-2 bg-inf rounded-3 mb-4">
+                                                <i class="fas fa-info-circle"></i> No existen estudiantes matriculados en el curso por el momento.
+                                            </p>
+                                        {% endif %}
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                <div class="bg-inf p-3 rounded-2 text-gris">
+                    <i class="fas fa-info-circle"></i> No existe tests base por el momento.
+                </div>
+            {% endif %}
+        {% endif %}
+        {% if role == 'student' %}
+            {% if tests %}
+                {% for test in tests %}
+                    {% if test.title == "TEST A-CEA" %}
+                        <div class="p-3 my-2 rounded-2 text-gris border border-1 test-item">
+                            <div class="row">
+                                <div class="col-5">
+                                    <i class="fa-regular fa-pen-to-square me-3"></i>{{ test.title }}
+                                </div>
+                                <div class="col-3 text-end">
+                                    {% if not test.state %}
+                                        <div class="ms-4 p-1 d-inline rounded-4 fs-7">
+                                            <a href="{% url 'test' test.test %}" class="text-decoration-none border border-dark text-dark py-1 px-3 rounded-3 fs-7">Realizar Test</a>
+                                        </div>
+                                    {% else %}
+                                        <div class="ms-4 bg-color-grisillo py-1 px-3 border d-inline rounded-3 fs-7">
+                                            Completado : {% result_test test.test user %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                <div class="bg-inf p-3 rounded-2 text-gris">
+                    <i class="fas fa-info-circle"></i> No existe tests base por el momento.
+                </div>    
+            {% endif %}
+        {% endif %}
+            
+
         <label class="text-grisillo fw-bold my-2">Lista</label>
         {% if role == 'student' %}
             {% if not tests %}
@@ -37,250 +227,254 @@
                 </div>
             {% else %}
                 {% for test in tests %}
-                    <div class="p-3 my-2 rounded-2 text-gris border border-1">
-                        <div class="row">
-                            <div class="col-9">
-                                <i class="fa-regular fa-pen-to-square me-3"></i> {{ test.title }}
-                            </div>
-                            <div class="col-3 text-end">
-                                {% if not test.state %}
-                                    <div class="ms-4 p-1 d-inline rounded-4 fs-7">
-                                        <a href="{% url 'test' test.test %}" class="text-decoration-none border border-dark text-dark py-1 px-3 rounded-3 fs-7">Realizar Test</a>
-                                    </div>
-                                {% else %}
-                                    <div class="ms-4 bg-color-grisillo py-1 px-3 border d-inline rounded-3 fs-7">
-                                        Completado : {% result_test test.test user %}
-                                    </div>
-                                {% endif %}
+                    {% if test.title != "TEST A-CEA" %}
+                        <div class="p-3 my-2 rounded-2 text-gris border border-1 test-item">
+                            <div class="row">
+                                <div class="col-9">
+                                    <i class="fa-regular fa-pen-to-square me-3"></i> {{ test.title }}
+                                </div>
+                                <div class="col-3 text-end">
+                                    {% if not test.state %}
+                                        <div class="ms-4 p-1 d-inline rounded-4 fs-7">
+                                            <a href="{% url 'test' test.test %}" class="text-decoration-none border border-dark text-dark py-1 px-3 rounded-3 fs-7">Realizar Test</a>
+                                        </div>
+                                    {% else %}
+                                        <div class="ms-4 bg-color-grisillo py-1 px-3 border d-inline rounded-3 fs-7">
+                                            Completado : {% result_test test.test user %}
+                                        </div>
+                                    {% endif %}
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    {% endif %}
                 {% endfor %}    
             {% endif %}
         {% endif %}
         {% if role == 'teacher' %}
             {% if teacher_tests %}
                 {% for test in teacher_tests %}
-                    <div class="p-3 my-2 rounded-2 text-gris border border-1">
-                        <div class="row">
-                            <div class="col-5">
-                                <i class="fa-regular fa-pen-to-square me-3"></i>{{ test.title }}
-                            </div>
-                            <div class="col-2 d-flex align-items-center">
-                                <i class="fa-solid fa-calendar me-2" title="Creado"></i>
-                                <span> {{ test.created_at|date:"d/m/Y H:i" }}</span>
-                            </div>
-                            <div class="col-2 d-flex align-items-center">
-                                <i class="fa-solid fa-sync me-2" title="Actualizado"></i>
-                                <span> {{ test.updated_at|date:"d/m/Y H:i" }}</span>
-                            </div>
-                            <div class="col-2">
-                                <a href="#" 
-                                    class="mx-1 text-decoration-none text-gris assign-test" 
-                                    data-bs-toggle="modal" 
-                                    data-bs-target="#assignTestModal{{ test.id }}"
-                                    title="Asignar test"
-                                    data-test='{"id": "{{ test.id }}"}'
-                                >
-                                    <i class="fa-solid fa-users"></i>
-                                    Asignar test
-                                </a>
-                            </div>
-                            <div class="col-1 text-center">
-                                <a  href="#" 
-                                    class="mx-1 text-decoration-none text-not-bad" 
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#editTestModal{{ test.id }}"
-                                    title="Editar"
-                                    data-test='{"id": "{{ test.id }}", "title": "{{ test.title }}", "questions": [{% for question in test.questions.all %}{"desc": "{{ question.description }}"},{% endfor %}]}'
-                                >
-                                    <i class="fa-solid fa-pencil"></i>
-                                </a>
-                                <a  href="{% url 'delete-test' test.id %}" 
-                                    class="mx-1 text-decoration-none text-dying" 
-                                    title="Eliminar"
-                                    id="delete-task-{{ test.id }}"
-                                >
-                                    <i class="fa-solid fa-trash-can"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="modal fade" id="assignTestModal{{ test.id }}" tabindex="-1" aria-labelledby="assignTestModalLabel" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title fw-bold" id="assignTestModalLabel">Asignar Test</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    {% if test.title != "TEST A-CEA" %}
+                        <div class="p-3 my-2 rounded-2 text-gris border border-1 test-item" >
+                            <div class="row">
+                                <div class="col-5">
+                                    <i class="fa-regular fa-pen-to-square me-3"></i>{{ test.title }}
                                 </div>
-                                <div class="modal-body">
-                                    <h1 class="fs-6">Asignar por curso</h1>
-                                    {% is_test_assigned_to_all_students test teaching as is_assigned_course %}
-
-                                    <form method="post" id="assignTestFormCourse" class="p-2 mb-4" data-test="{{ test.id }}">
-                                        {% csrf_token %}
-                                        <input hidden name="test-id" value="{{ test.id }}" >
-                                        <div class="form-check">
-                                            <input 
-                                                class="form-check-input" 
-                                                type="checkbox" 
-                                                name="course-form"
-                                                {% if is_assigned_course %}
-                                                    checked
-                                                {% endif %}
-                                            >
-                                            <label class="fs-7">
-                                                {{ teaching.name }}
-                                            </label>
-                                        </div>
-                                        <button type="submit" 
-                                                class="fs-7 bg-dark text-white border border-dark rounded-2 py-1 px-3 mt-4"
-                                                name="assign-test-form-all"
-                                                id="assign-test-form-all"
-                                                value="assign-test-form-all"
-                                        >
-                                            Asignar
-                                        </button>
-                                    </form>
-
-                                    <h1 class="fs-6">Asignar por grupos</h1>
-                                    {% if groups %}
-                                        <form method="post" id="assignTestForm" class="p-2 mb-4" data-test="{{ test.id }}">
-                                            {% csrf_token %}
-                                            <h5 class="fs-6 mb-3">Lista de grupos</h5>
-                                            {% for group in groups %}
-                                                {% is_group_assigned_to_test test group as is_assigned %}
-                                                <div class="form-check">
-                                                    <input 
-                                                        class="form-check-input" 
-                                                        type="checkbox" 
-                                                        name="groups[]" 
-                                                        value="{{ group.id }}" 
-                                                        id="group{{ group.id }}"
-
-                                                        {% if is_assigned %}
-                                                            checked
-                                                        {% endif %}
-                                                    >
-                                                    <label class="fs-7" for="group{{ group.id }}">
-                                                        {{ group.name }}
-                                                    </label>
-                                                </div>
-                                            {% endfor %}
-                                            <input hidden name="test-id" value="{{ test.id }}" >
-                                            <button type="submit" 
-                                                    class="fs-7 bg-dark text-white border border-dark rounded-2 py-1 px-3 mt-4"
-                                                    name="assign-test-form"
-                                                    id="assign-test-form"
-                                                    value="assign-test-form"
-                                            >
-                                                Asignar
-                                            </button>
-                                        </form>
-                                    {% else %}
-                                        <p class="fs-8 text-muted mb-3 p-2 bg-inf rounded-3 mb-4">
-                                            <i class="fas fa-info-circle"></i> Para poder asignar un test, es necesario crear primero al menos un grupo. Una vez que hayas creado un grupo, podrás asignar los tests.
-                                        </p>
-                                    {% endif %}
-                                    <h1 class="fs-6">Asignar por estudiante</h1>
-                                    {% if students %}
-                                        <form method="post" id="assignTestFormUser" class="p-2 mb-4" data-test="{{ test.id }}">
-                                            {% csrf_token %}
-                                            <h5 class="fs-6 mb-3">Lista de estudiantes</h5>
-                                            {% for student in students %}
-                                                {% is_test_assigned_to_user test student as is_assigned_user %}
-                                                <div class="form-check">
-                                                    <input 
-                                                        class="form-check-input" 
-                                                        type="checkbox" 
-                                                        name="students[]" 
-                                                        value="{{ student.id }}" 
-                                                        id="student{{ student.id }}"
-
-                                                        {% if is_assigned_user %}
-                                                            checked
-                                                        {% endif %}
-                                                    >
-                                                    <label class="fs-7" for="student{{ student.id }}">
-                                                        {{ student.first_name }} {{ student.last_name }}
-                                                    </label>
-                                                </div>
-                                            {% endfor %}
-                                            <input hidden name="test-id" value="{{ test.id }}" >
-                                            <button type="submit" 
-                                                    class="fs-7 bg-dark text-white border border-dark rounded-2 py-1 px-3 mt-4"
-                                                    name="assign-test-form-user"
-                                                    id="assign-test-form-user"
-                                                    value="assign-test-form-user"
-                                            >
-                                                Asignar
-                                            </button>
-                                        </form>
-                                    {% else %}
-                                        <p class="fs-8 text-muted mb-3 p-2 bg-inf rounded-3 mb-4">
-                                            <i class="fas fa-info-circle"></i> No existen estudiantes matriculados en el curso por el momento.
-                                        </p>
-                                    {% endif %}
-                                    
+                                <div class="col-2 d-flex align-items-center">
+                                    <i class="fa-solid fa-calendar me-2" title="Creado"></i>
+                                    <span> {{ test.created_at|date:"d/m/Y H:i" }}</span>
+                                </div>
+                                <div class="col-2 d-flex align-items-center">
+                                    <i class="fa-solid fa-sync me-2" title="Actualizado"></i>
+                                    <span> {{ test.updated_at|date:"d/m/Y H:i" }}</span>
+                                </div>
+                                <div class="col-2">
+                                    <a href="#" 
+                                        class="mx-1 text-decoration-none text-gris assign-test" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#assignTestModal{{ test.id }}"
+                                        title="Asignar test"
+                                        data-test='{"id": "{{ test.id }}"}'
+                                    >
+                                        <i class="fa-solid fa-users"></i>
+                                        Asignar test
+                                    </a>
+                                </div>
+                                <div class="col-1 text-center">
+                                    <a  href="#" 
+                                        class="mx-1 text-decoration-none text-not-bad" 
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#editTestModal{{ test.id }}"
+                                        title="Editar"
+                                        data-test='{"id": "{{ test.id }}", "title": "{{ test.title }}", "questions": [{% for question in test.questions.all %}{"desc": "{{ question.description }}"},{% endfor %}]}'
+                                    >
+                                        <i class="fa-solid fa-pencil"></i>
+                                    </a>
+                                    <a  href="{% url 'delete-test' test.id %}" 
+                                        class="mx-1 text-decoration-none text-dying" 
+                                        title="Eliminar"
+                                        id="delete-task-{{ test.id }}"
+                                    >
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </a>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="modal fade" id="editTestModal{{ test.id }}" tabindex="-1" aria-labelledby="editTestModalLabel" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title fw-bold" id="editTestModalLabel">Editar Test</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <form method="post" class="edit-test-form">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="test-id" value="{{ test.id }}">
-                                        <div class="mb-4">
-                                            <label for="edit-title-{{ test.id }}" class="d-block pb-1 fs-6 fw-bold">Título</label>
-                                            <input type="text" class="w-100 fs-7 py-1 px-2 border border-1 border-dark rounded-2" id="edit-title-{{ test.id }}" name="title" value="{{ test.title }}" required>
-                                        </div>
-                                        <p class="fs-8 text-muted mb-3 p-2 bg-inf rounded-3">
-                                            <i class="fas fa-info-circle"></i> <strong>Nota:</strong> Todas las preguntas tendrán las mismas opciones de respuesta: <strong>Siempre, Casi siempre, A veces, Rara vez, Nunca</strong>.
-                                        </p>
-                                        <div class="mb-2">
-                                            <div class="row">
-                                                <div class="col-11">
-                                                    <label class="pb-1 fs-6 fw-bold">Preguntas</label>
-                                                </div>
-                                                <div class="col-1 d-flex justify-content-center">
-                                                    <button
-                                                        type="button"
-                                                        title="Agregar pregunta"
-                                                        class="btn-add-quest-update fs-7 bg-white text-center text-dark border-0 text-decoration-none">
-                                                        <i class="fa-solid fa-plus-circle"></i>
-                                                    </button>
-                                                </div>
+                        <div class="modal fade" id="assignTestModal{{ test.id }}" tabindex="-1" aria-labelledby="assignTestModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title fw-bold" id="assignTestModalLabel">Asignar Test</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h1 class="fs-6">Asignar por curso</h1>
+                                        {% is_test_assigned_to_all_students test teaching as is_assigned_course %}
+
+                                        <form method="post" id="assignTestFormCourse" class="p-2 mb-4" data-test="{{ test.id }}">
+                                            {% csrf_token %}
+                                            <input hidden name="test-id" value="{{ test.id }}" >
+                                            <div class="form-check">
+                                                <input 
+                                                    class="form-check-input" 
+                                                    type="checkbox" 
+                                                    name="course-form"
+                                                    {% if is_assigned_course %}
+                                                        checked
+                                                    {% endif %}
+                                                >
+                                                <label class="fs-7">
+                                                    {{ teaching.name }}
+                                                </label>
                                             </div>
-                                        </div>
-                                        <div class="mb-4 container-edit-quests">
-                                            {% for question in test.questions.all %}
-                                                <div class="row mb-3">
-                                                    <div class="col-11">
-                                                        <input type="text" class="w-100 fs-7 py-1 px-2 border border-1 border-dark rounded-2" name="questions[]" value="{{ question.description }}">
+                                            <button type="submit" 
+                                                    class="fs-7 bg-dark text-white border border-dark rounded-2 py-1 px-3 mt-4"
+                                                    name="assign-test-form-all"
+                                                    id="assign-test-form-all"
+                                                    value="assign-test-form-all"
+                                            >
+                                                Asignar
+                                            </button>
+                                        </form>
+
+                                        <h1 class="fs-6">Asignar por grupos</h1>
+                                        {% if groups %}
+                                            <form method="post" id="assignTestForm" class="p-2 mb-4" data-test="{{ test.id }}">
+                                                {% csrf_token %}
+                                                <h5 class="fs-6 mb-3">Lista de grupos</h5>
+                                                {% for group in groups %}
+                                                    {% is_group_assigned_to_test test group as is_assigned %}
+                                                    <div class="form-check">
+                                                        <input 
+                                                            class="form-check-input" 
+                                                            type="checkbox" 
+                                                            name="groups[]" 
+                                                            value="{{ group.id }}" 
+                                                            id="group{{ group.id }}"
+
+                                                            {% if is_assigned %}
+                                                                checked
+                                                            {% endif %}
+                                                        >
+                                                        <label class="fs-7" for="group{{ group.id }}">
+                                                            {{ group.name }}
+                                                        </label>
                                                     </div>
-                                                    <div class="col-1 text-center d-flex justify-content-center p-0">
-                                                        <button type="button" class="fs-7 bg-white border-0 m-0 p-0 delete-question">
-                                                            <i class="fa-solid fa-minus-circle"></i>
+                                                {% endfor %}
+                                                <input hidden name="test-id" value="{{ test.id }}" >
+                                                <button type="submit" 
+                                                        class="fs-7 bg-dark text-white border border-dark rounded-2 py-1 px-3 mt-4"
+                                                        name="assign-test-form"
+                                                        id="assign-test-form"
+                                                        value="assign-test-form"
+                                                >
+                                                    Asignar
+                                                </button>
+                                            </form>
+                                        {% else %}
+                                            <p class="fs-8 text-muted mb-3 p-2 bg-inf rounded-3 mb-4">
+                                                <i class="fas fa-info-circle"></i> Para poder asignar un test, es necesario crear primero al menos un grupo. Una vez que hayas creado un grupo, podrás asignar los tests.
+                                            </p>
+                                        {% endif %}
+                                        <h1 class="fs-6">Asignar por estudiante</h1>
+                                        {% if students %}
+                                            <form method="post" id="assignTestFormUser" class="p-2 mb-4" data-test="{{ test.id }}">
+                                                {% csrf_token %}
+                                                <h5 class="fs-6 mb-3">Lista de estudiantes</h5>
+                                                {% for student in students %}
+                                                    {% is_test_assigned_to_user test student as is_assigned_user %}
+                                                    <div class="form-check">
+                                                        <input 
+                                                            class="form-check-input" 
+                                                            type="checkbox" 
+                                                            name="students[]" 
+                                                            value="{{ student.id }}" 
+                                                            id="student{{ student.id }}"
+
+                                                            {% if is_assigned_user %}
+                                                                checked
+                                                            {% endif %}
+                                                        >
+                                                        <label class="fs-7" for="student{{ student.id }}">
+                                                            {{ student.first_name }} {{ student.last_name }}
+                                                        </label>
+                                                    </div>
+                                                {% endfor %}
+                                                <input hidden name="test-id" value="{{ test.id }}" >
+                                                <button type="submit" 
+                                                        class="fs-7 bg-dark text-white border border-dark rounded-2 py-1 px-3 mt-4"
+                                                        name="assign-test-form-user"
+                                                        id="assign-test-form-user"
+                                                        value="assign-test-form-user"
+                                                >
+                                                    Asignar
+                                                </button>
+                                            </form>
+                                        {% else %}
+                                            <p class="fs-8 text-muted mb-3 p-2 bg-inf rounded-3 mb-4">
+                                                <i class="fas fa-info-circle"></i> No existen estudiantes matriculados en el curso por el momento.
+                                            </p>
+                                        {% endif %}
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal fade" id="editTestModal{{ test.id }}" tabindex="-1" aria-labelledby="editTestModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title fw-bold" id="editTestModalLabel">Editar Test</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form method="post" class="edit-test-form">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="test-id" value="{{ test.id }}">
+                                            <div class="mb-4">
+                                                <label for="edit-title-{{ test.id }}" class="d-block pb-1 fs-6 fw-bold">Título</label>
+                                                <input type="text" class="w-100 fs-7 py-1 px-2 border border-1 border-dark rounded-2" id="edit-title-{{ test.id }}" name="title" value="{{ test.title }}" required>
+                                            </div>
+                                            <p class="fs-8 text-muted mb-3 p-2 bg-inf rounded-3">
+                                                <i class="fas fa-info-circle"></i> <strong>Nota:</strong> Todas las preguntas tendrán las mismas opciones de respuesta: <strong>Siempre, Casi siempre, A veces, Rara vez, Nunca</strong>.
+                                            </p>
+                                            <div class="mb-2">
+                                                <div class="row">
+                                                    <div class="col-11">
+                                                        <label class="pb-1 fs-6 fw-bold">Preguntas</label>
+                                                    </div>
+                                                    <div class="col-1 d-flex justify-content-center">
+                                                        <button
+                                                            type="button"
+                                                            title="Agregar pregunta"
+                                                            class="btn-add-quest-update fs-7 bg-white text-center text-dark border-0 text-decoration-none">
+                                                            <i class="fa-solid fa-plus-circle"></i>
                                                         </button>
                                                     </div>
                                                 </div>
-                                            {% endfor %}
-                                        </div>
-                                        <button type="submit" class="fs-7 bg-dark text-white border border border-dark rounded-2 py-1 px-3" name="edit-test-form" value="edit-test-form">Actualizar</button>
-                                    </form>
+                                            </div>
+                                            <div class="mb-4 container-edit-quests">
+                                                {% for question in test.questions.all %}
+                                                    <div class="row mb-3">
+                                                        <div class="col-11">
+                                                            <input type="text" class="w-100 fs-7 py-1 px-2 border border-1 border-dark rounded-2" name="questions[]" value="{{ question.description }}">
+                                                        </div>
+                                                        <div class="col-1 text-center d-flex justify-content-center p-0">
+                                                            <button type="button" class="fs-7 bg-white border-0 m-0 p-0 delete-question">
+                                                                <i class="fa-solid fa-minus-circle"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                            <button type="submit" class="fs-7 bg-dark text-white border border border-dark rounded-2 py-1 px-3" name="edit-test-form" value="edit-test-form">Actualizar</button>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    {% endif %}
                 {% endfor %}
             {% else %}
                 <div class="bg-inf p-3 rounded-2 text-gris">
@@ -692,6 +886,20 @@
         questContainer.appendChild(colButton);
 
         document.querySelector('.container-quests').appendChild(questContainer);
+    });
+
+    document.getElementById('searchInput').addEventListener('input', function() {
+        const searchValue = this.value.toLowerCase();
+        const testItems = document.querySelectorAll('.test-item');
+
+        testItems.forEach(function(item) {
+            const title = item.querySelector('.col-5, .col-10').textContent.toLowerCase();
+            if (title.includes(searchValue)) {
+                item.style.display = '';
+            } else {
+                item.style.display = 'none';
+            }
+        });
     });
 
 

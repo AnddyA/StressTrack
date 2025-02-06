@@ -1,13 +1,12 @@
 body {
   height: 100vh;
-  
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: 5rem 1fr;
   grid-template-areas:
-  "header"
-  "main";
-  
+    "header"
+    "main";
+
   background: url("../img/background.jpg") no-repeat center center fixed;
   background-size: cover;
   position: relative;
@@ -24,6 +23,8 @@ body::before {
   filter: brightness(50%); /* Reduce el brillo al 50% */
   z-index: -1;
 }
+
+
 
 ::-webkit-scrollbar {
   width: 6px;
@@ -51,6 +52,7 @@ body::before {
 
 .main {
   grid-area: main;
+  
 }
   
 .fs-7 {
@@ -106,3 +108,11 @@ body::before {
 .bg-color-grisillo {
   background-color: #ececec;
 }
+
+.text-azul {
+color: #031926;
+}
+
+.text-azulillo {
+  color: #9DBEBB;
+  }

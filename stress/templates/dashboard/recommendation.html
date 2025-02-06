@@ -33,10 +33,15 @@
                 </button>
             </div>
         </div>
+        <div class="row my-3">
+            <div class="col-12">
+                <input type="text" id="searchInput" class="form-control" placeholder="Buscar recomendaciones...">
+            </div>
+        </div>
         <label class="text-grisillo fw-bold my-2">Lista</label>
         {% if recommendations %}
             {% for recommendation in recommendations %}
-                <div class="p-3 my-2 rounded-2 text-gris border border-1">
+                <div class="p-3 my-2 rounded-2 text-gris border border-1 recommendation-item">
                     <div class="row">
                         <div class="col-4">
                             <i class="fa-solid fa-list me-3"></i>{{ recommendation.title }}
@@ -201,6 +206,21 @@
             });
         });
     });
+
+    document.getElementById('searchInput').addEventListener('input', function() {
+            const searchValue = this.value.toLowerCase();
+            const recommendationItems = document.querySelectorAll('.recommendation-item');
+
+            recommendationItems.forEach(function(item) {
+                const title = item.querySelector('.col-4').textContent.toLowerCase();
+                if (title.includes(searchValue)) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+
 
 </script>
 
